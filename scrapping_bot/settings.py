@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'scrapping',
 ]
 
 MIDDLEWARE = [
@@ -73,16 +74,19 @@ WSGI_APPLICATION = 'scrapping_bot.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'scrapedb',
+        'NAME': 'scrapperdb',  # The database name you created
         'USER': 'django_user',
-        'PASSWORD': '1234567',
+        'PASSWORD': '#Nasimiyu1',  # The password you set
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
