@@ -71,4 +71,7 @@ class ScrapedDataAdmin(admin.ModelAdmin):
             row_data = [getattr(obj, field) for field in field_names]
             row_data.append(json.dumps(obj.content, indent = 2))
             writer.writerow(row_data)
+        
+        return response
+    export_as_csv.short_description = 'Export as CSV'
 
