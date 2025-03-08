@@ -57,21 +57,22 @@ class ScrapedDataAdmin(admin.ModelAdmin):
         return mark_safe(f'<pre>{json.dumps(obj.headers_used, indent=4, sort_keys=True)}</pre>') if obj.headers_used else '-'
     headers_pretty.short_description = 'Headers'
 
-    def export_as_csv(self,request, queryset):
-        # Export selected data records as CSV
-        meta = self.model._meta
-        field_names = [field.name for field in meta.fields if field.name !='content']
 
-        response = HttpResponse(content_type = 'text/csv')
-        response['content-Disposition'] = f'attachment; filename = {meta} - {datetime.now().strftime("%Y%m%d")}.csv
-        writer = csv.writer(response)
 
-        writer.writerow(field_names + ['content']) 
-        for obj in queryset:
-            row_data = [getattr(obj, field) for field in field_names]
-            row_data.append(json.dumps(obj.content, indent = 2))
-            writer.writerow(row_data)
-        
-        return response
-    export_as_csv.short_description = 'Export as CSV'
+    def export_as_csv(self, request, queryset):
+            """Export selected records as CSV."""
+            meta = self.model._meta
+            field_names = [field.name for field in meta.fields if field.name != 'content']
 
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = f'attachment; filename={meta}-{datetime.now().strftime("%Y%m%d")}.csv'
+            writer = csv.writer(response)
+
+            writer.writerow(field_names + ['content'])
+            for obj in queryset:
+                row_data = [getattr(obj, field) for field in field_names]
+                row_data.append(json.dumps(obj.content, indent=2))
+                writer.writerow(row_data)
+
+            return response
+            export_as_csv.short_description = "Export selected records as CSV"
