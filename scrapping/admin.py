@@ -75,3 +75,35 @@ class ScrapedDataAdmin(admin.ModelAdmin):
 
         return response
     export_as_csv.short_description = "Export selected records as CSV"
+
+    def export_as_json(self, request, queryset):
+        #Export selected records as JSON."
+        data = [{'id': obj.id, 'url': obj.url, 'data_type': obj.data_type, 'content': obj.content} for obj in queryset]
+        response = HttpResponse(content_type='application/json')
+        response['Content-Disposition'] = f'attachment; filename={datetime.now().strftime("%Y%m%d")}.json'
+        return response
+    export_as_json.short_description = "Export selected records as JSON"
+
+    def mark_as_successful(self, request, queryset):
+        #Mark selected records as successful."
+        queryset.update(status='success')
+    mark_as_successful.short_description = "Mark selected records as successful"
+
+    def mark_as_failed(self, request, queryset):
+        #Mark selected records as failed."
+        queryset.update(status='failed')
+    mark_as_failed.short_description = "Mark selected records as failed"
+
+    def get_form(self, request, obj=None, **kwargs):
+        if isinstance(db_field, JSONField):
+            kwargs['widget'] = JSONFieldPrettyWidget
+        return super().get_form(request, obj, **kwargs)
+
+@admin.register(ScrapingSchedule)
+class ScrapingScheduleAdmin(admin.ModelAdmin):
+    list_display = ['name', 'url_display','data_type' 'frequency', 'last_run', 'next_run', 'is_active']
+    list_filter = ['data_type', 'frequency', 'is_active']
+    search_fields = ['name', 'url','keywords']
+    readonly_fields = ['created_at','last_run', 'next_run']
+    actions =['activate_schedules','deactivate_schedules','run_now']
+    
