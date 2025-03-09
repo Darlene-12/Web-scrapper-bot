@@ -106,4 +106,55 @@ class ScrapingScheduleAdmin(admin.ModelAdmin):
     search_fields = ['name', 'url','keywords']
     readonly_fields = ['created_at','last_run', 'next_run']
     actions =['activate_schedules','deactivate_schedules','run_now']
-    
+
+    fieldsets = (
+        ('Basic Information', {'fields': ('name', 'url', 'data_type', 'keywords')}),
+        ('Scheduling', {'fields': ('frequency', 'is_active', 'cron_expression')}),
+
+    )
+
+    def url_display(self, obj):
+        # Shorten the URL for display
+        return obj.url[:37] + "..." if len(obj.url) > 40 else obj.url
+    url_display.short_description = 'URL'
+
+    def activate_schedules(self, request, queryset):
+        queryset.update(is_active = True)
+    activate_schedules.short_description = "Activated selected schedules"
+
+    def deactivate_schedules(self, request, queryset):
+        queryset.update(is_active = False)
+    deactivate_schedules.short_description = "Deactivated selected schedules"
+
+    def run_now(self, request, queryset):
+        # Triggger immediated execution of selected schedules
+        from .tasks import scrape_url_task
+        for schedule in queryset:
+            task = scrape_url_task.delay(schedule.url, schedule.keywords, schedule.data_type, schedule.use_selenium, schedule.custom_headers, schedule.timeout )
+            schedule.message_user(request, f"Task {task.id} has been scheduled for {schedule.url}, {schedule.name}")
+    run_now.short_description = "Run selected schedules now"
+
+    @admin.register(ScrapingProxy)
+    class ScrapingProxyAdmin(admin.ModelAdmin):
+        list_display = ['address', 'port', 'proxy_type', 'is_active', 'success_rate_display', 'country', 'last_used']
+        list_filter = ['proxy_type', 'is_active', 'country']
+        search_fields = ['address', 'country', 'city']
+        readonly_fields = ['last_used', 'success_count', 'failure_count', 'average_response-time']
+        actions = ['activate_proxies', 'deactivate_proxies', 'reset_counters']
+
+        fieldsets =(
+            ('Proxy Details', { 'fields': ('address', 'port', 'proxy_type', 'is_active', 'username', 'password')}),
+            ('Authentication', {'fields': ('username', 'password'), 'classes': ('collapse',)}),
+            ('Performance Metrics', {'fields': ('success_count', 'failure_count', 'average_response_time', 'last_used')}),
+            ('Geolocation', {'fields': ('country', 'city')})
+        )
+
+        def success_rate_display(self, obj):
+            return f"{obj.succcess_rate:.1f}%" if obj.success_rate else "-"
+        success_rate_display.short_description = 'Success Rate'
+
+        def formfield_for_dbfield(self, db_field, **kwargs):
+            field = super().formfield_for_dbfield(db_field, **kwargs)
+            if db_field.name == 'password':
+                field.widget = PasswordInput(render_value = True)
+            return field
