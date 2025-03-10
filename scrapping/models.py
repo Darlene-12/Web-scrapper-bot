@@ -28,6 +28,14 @@ class ScrapedData (models.Model):
     # Dynamic tagging for categorization
     tags = TaggableManager(help_text = "Dyanamically assign categories( e.g., 'news', 'tech', 'blog')")
 
+    selenium_used = models.BooleanField(default=False, help_text="Was Selenium used for scraping?")
+    data_type = models.CharField(
+        max_length=50,
+        choices=[('html', 'HTML'), ('json', 'JSON')],
+        blank=True,
+        help_text="Type of data scraped (HTML or JSON)"
+    )
+
     # Status tracking
     status = models.CharField(
         max_length = 20,
@@ -61,7 +69,7 @@ class ScrapedData (models.Model):
     class Meta:
         # Option for the scrappedData model
         verbose_name = "Scrapped Data"
-        verbose_name_plural = "Scrapped Date"
+        verbose_name_plural = "Scrapped Data"
 
         ordering = ['-timestamp']
         indexes = [
@@ -73,12 +81,18 @@ class ScrapedData (models.Model):
         """ This is basically a string representation of the scrapped data"""
         return f"Scraped from {self.url[:50]}... ({self.timestamp.strftime('%Y-%m-%d %H:%M')})"
     
+    
     def save(self, *args, **kwargs):
-            # Ensuring that the content is in a dictionary format before saving
-            if isinstance(self.content, str):
-                import json
-                self.content = json.loads(self.content)
-            super().save(*args, **kwargs)
+        if self.content:
+            try:
+                # If `content` is valid JSON, set `data_type` as JSON
+                json.loads(self.content)
+                self.data_type = 'json'
+            except (ValueError, TypeError):
+                # If JSON parsing fails, assume it's HTML
+                self.data_type = 'html'
+
+        super().save(*args, **kwargs)
 
     def get_content_preview(self, max_length=100):
             # Returns a preview of the content for display
@@ -143,7 +157,7 @@ class ScrapingSchedule(models.Model):
 
     def save(self, * args, **kwargs):
         # Ensure that the next run is correctly scheduled
-        if self.active and (not self.next_run or self.next_run < timezone.now()):
+        if self.is_active and (not self.next_run or self.next_run < timezone.now()):
             self.calculate_next_run()
         super().save(*args, **kwargs)
 
@@ -161,9 +175,7 @@ class ScrapingProxy(models.Model):
 
     address = models.CharField(max_length=100, help_text="Proxy server address (IP or hostname)")
     port = models.PositiveIntegerField(help_text="Proxy server port (eg: 8080)")
-    username = models.CharField(max_length = 100, help_text="Proxy server username", blank = True)
     proxy_type = models.CharField (max_length= 10, choices= PROXY_TYPE_CHOICES, default = 'http', help_text="Type of proxy")
-
     username = models.CharField(max_length=100, blank =True, null = True, help_text = "Username for authenticated proxies")
     password = models.CharField(max_length = 100, blank = True, null=True, help_text="Password for authenticated proxies")
 
@@ -185,7 +197,7 @@ class ScrapingProxy(models.Model):
         verbose_name = 'Scraping proxy'
         verbose_name_plural = 'Scraping proxies'
         ordering = ['-success_count']
-        unique_together = [['address', 'port']]
+        unique_together = ('address', 'port')
 
     def __str__(self):
         # String representation of the proxy
@@ -194,8 +206,8 @@ class ScrapingProxy(models.Model):
     @property
     def success_rate(self):
         # Calculate the success rate of the proxy
-        total = self.success_count + self.failure_count()
-        return(self.success_count . total) * 100 if total else 0
+        total = self.success_count + self.failure_count
+        return(self.success_count / total) * 100 if total else 0
 
     def get_formatted_proxy(self):
         # Return the proxy formatted for HTTP request.
