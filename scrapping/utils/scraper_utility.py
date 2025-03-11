@@ -212,7 +212,7 @@ class ScraperUtility:
         for selenium_domain in self.SELENIUM_REQUIRED_DOMAINS:
             if domain == selenium_domain or domain.endswith('.' + selenium_domain):
                 logger.info(f"Domain {domain} is known to require Selenium")
-                return 'Selenium'
+                return 'selenium'
         # If the content is not provided make a quick head request to check some headers
         if not content:
             try:
@@ -223,7 +223,7 @@ class ScraperUtility:
                 content_type = response.headers.get('Content-type', '').lower()
                 if 'application/json' in content_type:
                     logger.info(f"URL return JSON, likely a SPA or API - using selenium")
-                    return 'Selenium'
+                    return 'selenium'
                     
                     # Check for SPA frameworks in headers
                 for header, value in response.headers.items():
@@ -235,6 +235,102 @@ class ScraperUtility:
                         return 'Selenium'
             except Exception as e:
                 logger.warning(f"Erorr while checking headers to {url}: {str(e)}")
+                return 'selenium'
+        
+        # If content is provided analyze it for JS dependencies
+        if content:
+            soup = BeautifulSoup(content, 'html.parser')
+
+            # Check for SPA meta tags
+            meta_tags = soup.find_all('meta')
+            for tag in meta_tags:
+                if tag.get('name') == 'generator' and any(
+                    fw in tag.get('content', '').lower()
+                    for fw in ['react', 'vue', 'angular', 'next', 'gatsby']):
+                    logger.info(f" SPA meta tag detected - using Selenium")
+                    return 'selenium'
+            # Check script tags for known JS frameworks
+            script_tags = soup.find_all('script')
+            for script in script_tags:
+                src = script.get('src', '')
+                script_content = script.string if script.string else ''
+
+                # check for the src attributes
+                if any(indicator in src.lower() for indicator in self.JS_INDICATORS):
+                    logger.info(f"JS framework detected in script src - using Selenium")
+                    return 'selenium'
+
+                # Check inline for the script content
+                if script-content and any(indicator in script_content.lower() for indicator in self.JS_INDICATORS):
+                    logger.info(f"JS framework detected in script content - using Selenium")
+                    return 'selenium'
+            
+            # Check for dynamic content selectors
+            for selector in self.DYNAMIC_CONTENT_SELECTORS:
+                if soup.select(selector):
+                    logger.info(f"Dynamic content selector detected - using Selenium")
+                    return 'selenium'
+            
+            #Check for lazy-loaded images
+            images = soup.find_all('img')
+            for img in images:
+                if img.get('data-src') or img.get('data-lazy-src'):
+                    logger.info(f"Lazy-loaded images detected - using Selenium")
+                    return 'selenium'
+
+        # If nothing suggests Selenium is needed then use BeautifulSoup
+        logger.info(f"No indicators of dynamic content detected - using BeautifulSoup")
+        return 'bs4'
+    
+    # Function to scrape the data with beautiful soup
+    def scrape_with_bs4(self, url, headers=None, proxy=None, retry_count=0):
+         """
+        Scrape the given URL using BeautifulSoup
+
+        Args:
+            url: URL to scrape
+            headers: Optional headers to use
+            proxy: Optional proxy to use
+            retry_count: Current retry count
+        Returns:
+            tuple: (content, None) if successful, (None, error) if failed
+         """
+        start_time = time.time()
+
+        try:
+            if not headers:
+                headers = self.default_headers.copy()
+                if self.user_agent_rotation:
+                    headers['User-Agent'] = self.get_next_user_agent()
+
+                    # Set up proxy
+                    proxies = None
+                    if proxy:
+                        if isinstance(proxy, dict):
+                            proxies = proxy
+                        elif isinstance(proxy, str):
+                            proxies = {'http': proxy, 'https': proxy}
+                        elif hasattr(proxy, 'get_formatted_proxy'):
+                            proxies = proxy.get_formatted_proxy()
+                    
+                    # Make the request
+                    response = requests.get(
+                        url,
+                        headers=headers,
+                        proxies=proxies,
+                        timeout=self.timeout
+                    )
+                    response.raise_for_status()
+
+                    # Update proxy success count if applucable
+                    
+
+
+            
+
+
+
+
 
 
 
