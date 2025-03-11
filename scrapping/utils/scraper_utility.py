@@ -148,7 +148,97 @@ class ScraperUtility:
                 chrome_options.add_argument(f"--proxy-server={proxy_string}")
 
         # Add performance improving options
-        
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-infobars")
+        chrome_options.add_argument("--disable-notifications")
+        chrome_options.add_argument("--disable-popup-blocking")
+
+        # Add experimental options
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option("useAutomationExtension", False)
+
+        # Create and return the driver
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        driver.set_page_load_timeout(self.timeout)
+
+        return driver
+
+    def _get_driver_from_pool(self, proxy=None):
+        # Get a driver from the pool or create a new one
+        try:
+            driver = self.selenium_driver_pool.get(block=False)
+
+            # If proxy is different, quite this driver and create a new one
+            if proxy:
+                driver.quit()
+                driver = self._create_selenium_driver(proxy)
+            return driver
+        except queue.Empty:
+            # If the pool is empty create a new driver
+            return self._create_selenium_driver(proxy)
+    
+    def _return_driver_to_pool(self, driver):
+        # Return the driver back to the pool or quit if the pool is full.
+        try:
+            self.selenium_driver_pool.put(driver, block=False)
+        except queue.Full:
+            #Pool is full, quit this driver
+            driver.quit()
+    
+    def get_next_user_agent(self):
+        # Get the enxt user agent in the rotation
+        ua = self.user_agent[self.current_ua_index]
+        self.current_ua_index = (self.current_ua_index + 1) % len(self.user_agents)
+        return ua
+
+    def detect_scraper_type(self, url, content=None):
+        """
+        Determine whether to use beautifulsoup or selenium to scrape the given URL
+
+        Args:
+            url: URL to scrape
+            content: Optional content of the page to analyze
+
+        Returns:
+            str: 'selenium' or 'beautifulsoup'
+        """
+        # Parse domain from URL
+        domain = urlparse(url).netloc.lower()
+        if domain.startswith('www.'):
+            domain=domain[4:]
+
+        # Check if the doman is in known-selenium-required list
+        for selenium_domain in self.SELENIUM_REQUIRED_DOMAINS:
+            if domain == selenium_domain or domain.endswith('.' + selenium_domain):
+                logger.info(f"Domain {domain} is known to require Selenium")
+                return 'Selenium'
+        # If the content is not provided make a quick head request to check some headers
+        if not content:
+            try:
+                headers = {'User-Agent': self.get_next_user_agent()}
+                response = requests.head(url, headers=headers, timeout=5)
+
+                # Check the content type
+                content_type = response.headers.get('Content-type', '').lower()
+                if 'application/json' in content_type:
+                    logger.info(f"URL return JSON, likely a SPA or API - using selenium")
+                    return 'Selenium'
+                    
+                    # Check for SPA frameworks in headers
+                for header, value in response.headers.items():
+                    header_lower = header.lower()
+                    value_lower = value.lower()
+                    if ('x-powered-by' in header_lower and
+                    any(fw in value_lower for fw in ['react', 'vue', 'angular','next'])):
+                        logger.info(f"SPA framework detected in headers - using Selenium")
+                        return 'Selenium'
+            except Exception as e:
+                logger.warning(f"Erorr while checking headers to {url}: {str(e)}")
+
+
+
+
 
 
 
