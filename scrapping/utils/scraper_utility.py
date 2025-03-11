@@ -21,6 +21,10 @@ from ..models import ScrapedData, ScrapingProxy
 
 # Set up logging
 logger = logging.getLogger(__name__)
+""" 
+Logging is used for tracking events, debugging issues, and monitoring your scraper’s performance. 
+Instead of using print() statements, logging provides structured output, levels of severity, and the ability to save logs to files.
+"""
 
 class ScraperUtility:
     """
@@ -74,3 +78,77 @@ class ScraperUtility:
         self.user_agent_rotation = user_agent_rotation
         self.selenium_driver_pool = queue.Queue()
         self.max_driver_pool_size = 3 # Maximum number of selenium drivers to keep pool in
+
+        # Initialize the driver pool
+        self._initialize_driver_pool()
+
+        # Default headers
+        self.default_headers = {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                        'Accept-Language': 'en-US,en;q=0.5',
+                        'Connection': 'keep-alive',
+                        'Upgrade-Insecure-Requests': '1',
+                        'Cache-Control': 'max-age=0',
+        }
+
+        # List of common user agents for rotation
+        self.user_agents= [
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0',
+                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15',
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36 Edg/96.0.1054.29',
+                        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+                        'Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Mobile/15E148 Safari/604.1',
+                        'Mozilla/5.0 (iPad; CPU OS 15_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Mobile/15E148 Safari/604.1',
+                        'Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/95.0',
+
+        ]
+
+        # Setting the current user agent index for rotation
+        self.current_ua_index = 0
+
+    def _initialize_driver_pool(self):
+        # Initializing a pool of selenium WebDriver instances for reuse
+        try:
+            for _ in range(self.max_driver_pool_size):
+                driver = self._create_selenium_driver()
+                self.selenium_driver_pool.put(driver)
+        except Exception as e:
+            logger.warning(f"Failed to initialize selenium driver pool: {str(e)}")
+
+    def _create_selenium_driver(self, proxy = None):
+        # Create a new selenium WebDriver instance
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--window-size=1920, 1080")
+
+        # set random user agent if rotation is enabled
+
+        if self.user_agent_rotation:
+            ua= self.user_agents[self.current_ua_index]
+            chrome_options.add_argument(f"user-agent={ua}")
+            self.current_ua_index = (self.current_ua_index + 1) % len(self.user_agents) 
+        
+        # Add proxy if provided
+        if proxy:
+            proxy_string = None
+            if isinstance(proxy, dict) and "http" in proxy:
+                proxy_string =proxy["http"]
+            elif isinstance(proxy, str):
+                proxy_string = proxy
+            elif hasattr(proxy, "get_formatted_proxy"):
+                proxy_dict = proxy.get_formatted_proxy()
+                proxy_string = proxy_dict["http"]
+
+            if proxy_string:
+                chrome_options.add_argument(f"--proxy-server={proxy_string}")
+
+        # Add performance improving options
+        
+
+
+
