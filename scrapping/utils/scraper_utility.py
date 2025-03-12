@@ -284,19 +284,7 @@ class ScraperUtility:
     
     # Function to scrape the data with beautiful soup
     def scrape_with_bs4(self, url, headers=None, proxy=None, retry_count=0):
-         """
-        Scrape the given URL using BeautifulSoup
-
-        Args:
-            url: URL to scrape
-            headers: Optional headers to use
-            proxy: Optional proxy to use
-            retry_count: Current retry count
-        Returns:
-            tuple: (content, None) if successful, (None, error) if failed
-         """
         start_time = time.time()
-
         try:
             if not headers:
                 headers = self.default_headers.copy()
@@ -322,7 +310,113 @@ class ScraperUtility:
                     )
                     response.raise_for_status()
 
-                    # Update proxy success count if applucable
+                    # Update proxy success count if applicable
+                    if hasattr(proxy, 'success_count'):
+                        proxy.success_count +=1
+                        proxy.save()
+
+                    return response.text, None
+        except requests.RequestException as e:
+            # Update proxy failure count if applicable
+            if hasattr(proxy,'failure_count'):
+                proxy.failure_count +=1
+                proxy.save()
+
+            # Retry logic
+            if retry_count < self.max_retries:
+                logger.warning(f"Request failed for {url}: {str(e)} - retrying {retry_count + 1}/{self.max_retries}")
+
+                # Get a new proxy if available
+                new_proxy = proxy
+                if self.proxy_manager:
+                    new_proxy = self.proxy_manager.get_proxy()
+
+                # Wait before retrying
+                time.sleep(1 * (retry_count +1 ))
+
+                return self.scrape_with_bs4(url, headers, new_proxy, retry_count +1)
+            else:
+                logger.error(f"All retries failed for {url}: {str(e)}")
+                return None, str(e)
+    def scrape_with_selenium(self, url, proxy = None, retry_count = 0, wait_for_selector= None, wait_time = 10, scroll=True, actions = None):
+        # scrape the URL using selenium
+        start_time = time.time()
+        driver = None
+
+
+        try:
+            # Get a driver from the pool
+            driver = self._get_driver_from_pool(proxy)
+
+            # Navigate to the url
+            driver.get(url)
+
+            # Wait for the page to load
+            WebDriverWait(driver,wait_time).until(
+                lambda d:d.execute_script("return document.readyState")=="Complete"
+            )
+
+            # Wait for the specific selector if provided
+            if wait_for_selector:
+                try:
+                    WebDriverWait(driver, wait_time).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, wait_for_selector))    
+                    )
+                except TimeoutException:
+                    # Log but continue if selector is not found
+                    logger.warning(f"Selector '{wait_for_selector}' not found within timeout")
+             # Execute scroll actions if needed
+            if scroll:
+                # Scroll to the bottom in increments
+                total_height = driver.execute_script("return document.body.scrollHeight")   
+                viewport_height = driver.execute_script("return window.innerHeight")
+                scroll_steps = max(1, total_height // viewport_height)
+
+
+                for i in range(scroll_steps):
+                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+                    time.sleep(0.5)  # Short pause waiting for the page to load
+                #Scroll back to top
+                driver.execute_script("window.scrollTo(0,0)")
+
+            # Perfrom custom actions if provided
+            if actions:
+                for action in actions:
+                    action_type = action.get('type')
+
+                    if action_type == 'click':
+                        selector = action.get('selector')
+                        try:
+                            element = WebDriverWait(driver, wait_time).until(
+                                EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
+                            )
+                            driver.execute_script('arguments[0]. click();', element)
+                            time.sleep9action.get('wait_after', 1)
+                        except (TimeoutException, NoSuchElementException) as e:
+                            logger.warning(f"Click action failed for selector '{selector}'")
+                    elif action_type =='input':
+                        selector = action.get('selector')
+                        value = action.get('value', '')
+                        try:
+                            element = WebDriverWait(driver, wait_time).until(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, selector))     
+                            )
+                            element.clear()
+                            element.send_keys(value)
+                            time.sleep(action.get('wait_after', 0.5))
+                        except (TimeoutException , NoSuchElementException) as e:
+                            logger.warning(f"Input action failed for selector '{selector}': {str(e)}")
+                            
+
+            
+
+
+
+
+
+
+
+            
                     
 
 
