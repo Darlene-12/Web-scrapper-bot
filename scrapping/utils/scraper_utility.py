@@ -406,7 +406,19 @@ class ScraperUtility:
                             time.sleep(action.get('wait_after', 0.5))
                         except (TimeoutException , NoSuchElementException) as e:
                             logger.warning(f"Input action failed for selector '{selector}': {str(e)}")
-                            
+                    elif action_type == 'wait':
+                        time.sleep(action.get('wait_after', 0.5))
+                    elif action_type == 'execute script':
+                        script = action.get('script')
+                        if script:
+                            driver.execute_script(script)
+                            time.sleep(action.get('wait_after, 0.5'))
+            # Give a final wait for dynamic content 
+            time.sleep(1)  
+
+            # Get the page content
+            content = driver.page_source 
+
 
             
 
