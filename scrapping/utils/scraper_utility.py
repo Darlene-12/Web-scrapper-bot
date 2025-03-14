@@ -510,4 +510,48 @@ class ScraperUtility:
 
             for future in futures:
                 url, content, method, error = future.result()
-                results[url] = {'content': content, 'method': method, 'error': error}   
+                results[url] = {'content': content, 'method': method, 'error': error} 
+        return results
+
+    async def async_scrape_url(self, url, force_method=None, **kwargs):
+        # Asynchronously scrape a single URL]
+        # Check if we should force selenium
+        force_method = kwargs.get('force_method')
+        if force_method =='selenium':
+            with ThreadPoolExecutor (max_workers=1) as executor:
+                future = executor.submit(self.scrape_url, url, force_method, **kwargs)  
+                return await asyncio.wrap_future(future)
+            
+        #For bs4 we use aiohttp
+        header = kwargs.get('headers',self.default_headers.copy())
+        if self.user_agent_rotation:
+            headers['User-Agent'] = self.get_next_user_agent()
+
+        proxy = kwargs.get('proxy')
+        proxy_url = None
+        if proxy:
+            if isinstance(proxy,dict) and 'http' in proxy:
+                proxy_url = proxy['http']
+            elif isinstance('proxy', str):
+                proxy_url = proxy
+            elif hasattr(proxy,'get_formatted_proxy'):
+                proxy_dict = proxy.get_formatted_proxy()
+                proxy_url = proxy_dict['http']
+        
+        close_session = False
+        if session is None:
+            session = aiohttp.ClientSession()
+            close_session = True
+
+        try:
+            async with session.get(url, headers=headers, proxy=proxy_url, timneout=self.timeout) as response:
+                if response.status >= 400:
+                    error = f"HTTP error status: {response.status}"
+                    # If we get 403 or 429 try with selenium
+                    if response.status in (403,429):
+                        if logger.info(f"Got {response.status} status, retrying with selenium")
+
+
+
+
+
