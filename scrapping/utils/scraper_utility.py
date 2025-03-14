@@ -419,28 +419,95 @@ class ScraperUtility:
             # Get the page content
             content = driver.page_source 
 
-
+            # Update proxy success count if applicable
+            if hasattr(proxy, ' success_count'):
+                proxy.success_count +=1
+                proxy.save()
             
+            # Return driver to pool and return content
+            self._return_driver_to_pool(driver)
+            driver = None # Clear reference so we don't try to return it again finally
 
+            return content, None
+        except WebDriverException as e:
+            # Update proxy failure count if applicable
+            if hasattr(proxy, 'dailure_count'):
+                proxy.failure_count +=1
+                proxy.save()
 
+                # Retry logic
+                if retry_count < self.max_retries:
+                    logger.warning(f"Request failed for {url}: {str(e)}. Retyring {retry_count +1}/{self.max_retries}")
 
+                    #  Get a new proxy if available
+                    new_proxy = proxy
+                    if self.proxy_manager:
+                        new_proxy = self.proxy_manager.get_proxy()
 
-
-
-
-            
                     
+                    #Wait before retrying
+                    time.sleep(2 * (retry_count +1))
 
+                    # Quit thhe current driver and don't return it to the pool
+                    if driver:
+                        try:
+                            driver.quit()
+                        except:
+                            pass
+                        driver =None
+                    
+                    return self.scrape_with_selenium(
+                        url, new_proxy, retry_count + 1,
+                        wait_for_selector, wait_time, scroll, actions
+                    )
+                else:
+                    logger.error(f"All retries failed for {url}: {str(e)}")
+                    return None, str(e)
+        finally:
+            # Ensure driver is returned to pool or quit if exception occured
+            if driver:
+                try:
+                    self._return_driver_to_pool(driver)
+                except:
+                    # If any error occurs while returning to pool, quit the driver
+                    try:
+                        driver.quit()
+                    except:
+                        pass
+    def scrape_url(self, url, force_method = None, **kwargs):
+        # Determine method if not forced
+        if not method:
+            method = self.detect_scrapper_try(url)
 
-            
+        # Extract relevant kwargs
+        headers = kwargs.get('headers')
+        proxy = kwargs.get('proxy')
+        wait_for_selctor = kwargs.get('wait_for_selector')
+        wait_time = kwargs.get('wait_time', 10)
+        scroll = kwargs.get('scroll', True)
+        actions = kwargs.get('actions')
 
+        # Scrape using the determined method
+        if method == 'bs4':
+            content, error = self.scrape_with_bs4(url, headers, proxy)
+        else: # With selenium
+            content, error = self.scrape_with_selenium(
+                url, proxy, 0, wait_for_selector, wait_time, scroll, actions
+            )
+            method = 'selenium' if content else 'bs4'
+        return content, method, error
+    
+    def batch_scrape(self,urls,max_workers=5, **kwargs):
+        
+        results = {}
 
+        def scrape_worker(url):
+            content, method, error= self.scrape_url(url, **kwargs)
+            return url, content, method, error
+        
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(scrape_worker, url)for url in urls]
 
-
-
-
-
-
-
-
-
+            for future in futures:
+                url, content, method, error = future.result()
+                results[url] = {'content': content, 'method': method, 'error': error}   
