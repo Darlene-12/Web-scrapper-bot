@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'scrapping',
     'taggit',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

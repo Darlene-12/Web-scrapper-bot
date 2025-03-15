@@ -19,4 +19,6 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('scraping/', include('scraping.urls')),
+    path('', RedirectView.as_view(url='/admin/', permanent=False)),
 ]
