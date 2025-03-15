@@ -1,12 +1,12 @@
 import os
-from scrapping_bot.celery import Celery
+from celery import Celery  # Import from celery package, not from the local module
 from django.conf import settings
 
 # Set the default Django settings module for the 'celery' program
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_scraping_bot.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'scrapping_bot.settings')
 
 # Create the Celery app
-app = Celery('web_scraping_bot')
+app = Celery('scrapping_bot')
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

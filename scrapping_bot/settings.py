@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'scrapping',
     'taggit',
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
