@@ -549,9 +549,42 @@ class ScraperUtility:
                     error = f"HTTP error status: {response.status}"
                     # If we get 403 or 429 try with selenium
                     if response.status in (403,429):
-                        if logger.info(f"Got {response.status} status, retrying with selenium")
+                        logger.info(f"Got {response.status} status, retrying with selenium {url}")
+                    with ThreadPoolExecutor(max_workers=1) as executor:
+                         future = executor.submit(self.scrape_url,url, 'selenium', **kwargs)
+                         return await asyncio.wrap_future(future)
+                return None, 'bs4', error
+            content = wait response.text()
 
+            # Update proxy success count if applicable
+            if hasattr(proxy, 'success_count'):
+                proxy.success_count +=1
+                await self._async_save_proxy(proxy)
 
+            # Check if the content needs selenium after all
+            if self.detect_scrapper_type(url, content) == 'selenium':
+                logger.info(f"Content suggests using selenium - retrying {url}")
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(self.scrape_url, url, 'selenium', **kwargs)
+                return await asyncio.wrap_future(future)
+            
+            return content, 'bs4', None
+        except Exception as e:
+            # Update proxy failure count if applicable
+            if hasattr(proxy, ' failure_count'):
+                proxy.failure_count +=1
+                await self._async_save_proxy(proxy)
 
+            error = str(e)
+            logger.error(f"Async scraping error for {url}: {error}")
 
+            # Fall back to selenium for any errors
+            logger.info(f"Async request failed, falling back to selenium for {url}")
+            with ThreadPoolExecutor (max_workers=1) as executor:
+                future = executor.submit(self.scrape_url, url, 'selenium', **kwargs)
+                return await asyncio.wrap_future(future)
+        finally:
+            if close_session:
+                await session.close()
 
+                
