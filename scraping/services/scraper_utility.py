@@ -56,7 +56,8 @@ class ScraperUtility:
         'zillow.com', 'booking.com', 'airbnb.com', 'target.com', 'walmart.com',
         'bestbuy.com', 'newegg.com', 'ebay.com'
     ]
-    
+
+
     def __init__(self, proxy_manager=None, max_retries=3, timeout=30, user_agent_rotation=True):
         """
         Initialize the scraper utility.
@@ -74,9 +75,6 @@ class ScraperUtility:
         self.selenium_driver_pool = queue.Queue()
         self.max_driver_pool_size = 3  # Maximum number of Selenium drivers to keep in pool
         
-        # Initialize the driver pool
-        self._initialize_driver_pool()
-        
         # Default headers
         self.default_headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -87,7 +85,7 @@ class ScraperUtility:
             'Cache-Control': 'max-age=0',
         }
         
-        # List of common user agents for rotation
+        # List of common user agents for rotation - MOVED UP BEFORE INITIALIZATION
         self.user_agents = [
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0',
@@ -101,6 +99,10 @@ class ScraperUtility:
         
         # Current user agent index for rotation
         self.current_ua_index = 0
+        
+        # Initialize the driver pool - NOW AFTER USER AGENTS ARE DEFINED
+        self._initialize_driver_pool()
+    
     
     def _initialize_driver_pool(self):
         """Initialize a pool of Selenium WebDriver instances for reuse."""
