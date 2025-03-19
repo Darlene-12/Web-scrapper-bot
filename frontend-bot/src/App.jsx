@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ScrapeForm from './components/ScrapeForm/ScrapeForm';
 import ResultsTable from './components/ResultsTable/ResultsTable';
+import AnalyticsPage from './pages/AnalyticsPage';
 import './App.css';
 
 function App() {
