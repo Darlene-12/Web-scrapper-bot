@@ -1,0 +1,122 @@
+.results-table-container{
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.results-header{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;    
+    margin-bottom: 15px;
+}
+
+.download-buttons{
+    display: flex;
+    gap: 10px;
+}
+
+.download-btn{
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.json-btn{
+    background-color: #ffc107; /* Added the # that was missing */
+    color: #212529;
+}
+
+.csv-btn{
+    background-color: #28a745;
+    color: white;
+}
+
+.table-wrapper{
+    overflow-x: auto;
+    margin-bottom:20px;
+}
+
+.results-table{
+    width: 100%;
+    border-collapse: collapse;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Added styling for table headers that was missing */
+.results-table th {
+    background-color: #f8f9fa;
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+}
+
+.results-table td {
+    padding: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.results-table tr:hover{
+    background-color: #f5f5f5;
+}
+
+/* Added the no-data class for the empty state */
+.no-data {
+    text-align: center;
+    padding: 50px 0;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.review-text{
+    max-width: 500px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.view-details-btn {
+    background-color: #4682B4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.view-details-btn:hover {
+    background-color: #3a6d96;
+}
+
+.expanded-content {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.expanded-content pre {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.sentiment-chart-placeholder {
+    height: 200px;
+    background-color: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:#6c757d;
+    border-radius: 4px;
+    font-style: italic;
+}

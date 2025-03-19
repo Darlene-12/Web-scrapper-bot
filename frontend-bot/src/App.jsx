@@ -1,32 +1,26 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import ScrapeForm from './components/ScrapeForm/ScrapeForm';
+import ResultsTable from './components/ResultsTable/ResultsTable';
 import './App.css';
 
-function App(){
+function App() {
   const [scrapingResults, setScrapingResults] = useState(null);
 
-  const handleScrapingComplete = (data) => {
-    setScrapingResults(data);
-    console.log(' Scraping results:', results);
-  };  
-
+  const handleScrapingComplete = (results) => {
+    setScrapingResults(results);
+    console.log('Scraping results:', results);
+  };
 
   return (
     <div className="app-container">
-      <header className="app-header">
-        <h1>Web Scraping</h1>
-      </header>
       <main className="app-main">
         <ScrapeForm onScrapingComplete={handleScrapingComplete} />
-        {scrapingResults && (
-          <div className="results-preview">
-            <h2>Scraping Results</h2>
-            <pre>{JSON.stringify(scrapingResults, null, 2)}</pre>
-          </div>
-        )}
+        <ResultsTable data={scrapingResults} />
       </main>
     </div>
   );
 }
 
 export default App;
+
+
