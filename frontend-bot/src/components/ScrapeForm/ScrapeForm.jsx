@@ -70,7 +70,10 @@ const ScrapeForm = ({ onScrapingComplete }) => {
           </button>
           <button 
             className="nav-button"
-            onClick={() => onNavigate && onNavigate('schedule')}
+            onClick={() => {
+              console.log('Schedule button clicked');
+              if (onNavigate) onNavigate('schedule');
+            }}
           >
             Schedule
           </button>
