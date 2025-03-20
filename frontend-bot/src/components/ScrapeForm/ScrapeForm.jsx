@@ -51,6 +51,33 @@ const ScrapeForm = ({ onScrapingComplete }) => {
   return (
     <div className="scrape-form-container">
       <h2>Multi-Functional Web Scraping Bot</h2>
+
+
+      {/* Navigation Buttons */}
+      <div className="nav-container">
+        <div className="nav-buttons">
+          <button 
+            className="nav-button active"
+            onClick={() => onNavigate && onNavigate('scrape')}
+          >
+            Scrape Data
+          </button>
+          <button 
+            className="nav-button"
+            onClick={() => onNavigate && onNavigate('results')}
+          >
+            View Results
+          </button>
+          <button 
+            className="nav-button"
+            onClick={() => onNavigate && onNavigate('schedule')}
+          >
+            Schedule
+          </button>
+        </div>
+      </div>
+
+      {/* Scrape form */}
       <form onSubmit={handleSubmit} className="scrape-form">
         <div className="form-group">
           <label htmlFor="url">Enter URL:</label>
