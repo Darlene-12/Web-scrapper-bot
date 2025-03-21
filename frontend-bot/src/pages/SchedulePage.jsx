@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { scheduleScrapingTask } from '../api/api'; // Import API method
 import './SchedulePage.css';
 
 const SchedulePage = ({ onNavigate }) => {
@@ -9,6 +10,7 @@ const SchedulePage = ({ onNavigate }) => {
     frequency: 'daily' // default value
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,16 +27,36 @@ const SchedulePage = ({ onNavigate }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Validate URL
+      if (!scheduleData.url) {
+        throw new Error('URL is required');
+      }
+      
+      // Call the API to schedule the task
+      await scheduleScrapingTask(scheduleData);
+      
       console.log('Scheduled task:', scheduleData);
-      setLoading(false);
       alert('Task scheduled successfully!');
-    }, 1000);
+      
+      // Reset form after successful submission
+      setScheduleData({
+        url: '',
+        keywords: '',
+        dataType: 'prices',
+        frequency: 'daily'
+      });
+    } catch (err) {
+      console.error('Scheduling error:', err);
+      setError(err.response?.data?.error || err.message || 'An error occurred while scheduling');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -102,7 +124,7 @@ const SchedulePage = ({ onNavigate }) => {
             onChange={handleChange}
             className="form-control"
           >
-            <option value="product">Product</option>
+            <option value="prices">Prices</option>
             <option value="reviews">Reviews</option>
           </select>
         </div>
@@ -134,6 +156,8 @@ const SchedulePage = ({ onNavigate }) => {
         <button type="submit" className="schedule-button" disabled={loading}>
           {loading ? 'Scheduling...' : 'Schedule'}
         </button>
+        
+        {error && <div className="error-message">{error}</div>}
       </form>
     </div>
   );

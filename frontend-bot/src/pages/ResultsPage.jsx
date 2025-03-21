@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getScrapedHistory, deleteScrapedData } from '../api/api'; // Import API methods
 import './ResultsPage.css';
 
 const ResultsPage = ({ onNavigate }) => {
@@ -7,7 +8,29 @@ const ResultsPage = ({ onNavigate }) => {
     { id: 1, url: 'example.com', keywords: 'excellent', date: '2023-10-01' },
     { id: 2, url: 'example2.com', keywords: 'poor', date: '2023-10-02' }
   ]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [selectedItems, setSelectedItems] = useState([]);
+
+  // Add useEffect to fetch real data
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        setLoading(true);
+        const response = await getScrapedHistory();
+        if (response && response.data) {
+          setResults(response.data);
+        }
+      } catch (err) {
+        console.error('Error fetching results:', err);
+        setError('Failed to load results. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResults();
+  }, []);
 
   // Filter results based on search term
   const filteredResults = results.filter(item => 
@@ -38,19 +61,32 @@ const ResultsPage = ({ onNavigate }) => {
     alert('Download started for selected items');
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedItems.length === 0) {
       alert('Please select items to delete');
       return;
     }
     
-    // Filter out selected items
-    const updatedResults = results.filter(item => !selectedItems.includes(item.id));
-    setResults(updatedResults);
-    setSelectedItems([]);
-    
-    console.log('Deleted items:', selectedItems);
-    alert('Selected items deleted successfully');
+    try {
+      setLoading(true);
+      
+      // Delete selected items through the API
+      for (const id of selectedItems) {
+        await deleteScrapedData(id);
+      }
+      
+      // Update local state
+      const updatedResults = results.filter(item => !selectedItems.includes(item.id));
+      setResults(updatedResults);
+      setSelectedItems([]);
+      
+      alert('Selected items deleted successfully');
+    } catch (err) {
+      console.error('Error deleting items:', err);
+      setError('Failed to delete selected items');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -95,50 +131,56 @@ const ResultsPage = ({ onNavigate }) => {
       {/* Results table */}
       <div className="results-table-container">
         <h3>Results:</h3>
-        <table className="results-table">
-          <thead>
-            <tr>
-              <th className="checkbox-column">
-                <input 
-                  type="checkbox" 
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedItems(filteredResults.map(item => item.id));
-                    } else {
-                      setSelectedItems([]);
-                    }
-                  }}
-                  checked={selectedItems.length === filteredResults.length && filteredResults.length > 0}
-                />
-              </th>
-              <th>URL</th>
-              <th>Keywords</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredResults.length > 0 ? (
-              filteredResults.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(item.id)}
-                      onChange={() => handleSelectItem(item.id)}
-                    />
-                  </td>
-                  <td>{item.url}</td>
-                  <td>{item.keywords}</td>
-                  <td>{item.date}</td>
-                </tr>
-              ))
-            ) : (
+        {loading ? (
+          <div className="loading-message">Loading results...</div>
+        ) : error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          <table className="results-table">
+            <thead>
               <tr>
-                <td colSpan="4" className="no-results">No results found</td>
+                <th className="checkbox-column">
+                  <input 
+                    type="checkbox" 
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedItems(filteredResults.map(item => item.id));
+                      } else {
+                        setSelectedItems([]);
+                      }
+                    }}
+                    checked={selectedItems.length === filteredResults.length && filteredResults.length > 0}
+                  />
+                </th>
+                <th>URL</th>
+                <th>Keywords</th>
+                <th>Date</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredResults.length > 0 ? (
+                filteredResults.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(item.id)}
+                        onChange={() => handleSelectItem(item.id)}
+                      />
+                    </td>
+                    <td>{item.url}</td>
+                    <td>{item.keywords}</td>
+                    <td>{item.date}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="no-results">No results found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {/* Action buttons */}
@@ -146,14 +188,14 @@ const ResultsPage = ({ onNavigate }) => {
         <button 
           className="download-button"
           onClick={handleDownload}
-          disabled={selectedItems.length === 0}
+          disabled={selectedItems.length === 0 || loading}
         >
           Download
         </button>
         <button 
           className="delete-button"
           onClick={handleDelete}
-          disabled={selectedItems.length === 0}
+          disabled={selectedItems.length === 0 || loading}
         >
           Delete
         </button>

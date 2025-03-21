@@ -17,6 +17,12 @@ const handleResponse = async (response) => {
   return response.json();
 };
 
+// Helper function to get auth headers for authenticated requests
+function getAuthHeaders() {
+  const token = localStorage.getItem('authToken');
+  return token ? { 'Authorization': `Token ${token}` } : {};
+}
+
 // API Services object
 const apiService = {
   // Authentication
@@ -239,10 +245,11 @@ const apiService = {
   }
 };
 
-// Helper function to get auth headers for authenticated requests
-function getAuthHeaders() {
-  const token = localStorage.getItem('authToken');
-  return token ? { 'Authorization': `Token ${token}` } : {};
-}
+// Export individual functions for direct import in components
+export const scrapeData = apiService.scrapedData.scrapeNow;
+export const getScrapedHistory = apiService.scrapedData.getAll;
+export const deleteScrapedData = apiService.scrapingSchedules.delete;
+export const scheduleScrapingTask = apiService.scrapedData.schedule;
 
+// Export the default service object
 export default apiService;
