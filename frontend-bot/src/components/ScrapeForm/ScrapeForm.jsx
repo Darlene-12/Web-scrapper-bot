@@ -68,6 +68,7 @@ const ScrapeForm = ({ onScrapingComplete, onNavigate }) => {
           >
             View Results
           </button>
+
           <button 
             className="nav-button"
             onClick={() => {
@@ -118,14 +119,53 @@ const ScrapeForm = ({ onScrapingComplete, onNavigate }) => {
             onChange={handleChange}
             className="form-control"
           >
-            <option value="general">General Content</option>
-            <option value="product">Product</option>
-            <option value="review">Reviews</option>
-            <option value="price">Prices</option>
-            <option value="article">Article</option>
+            <option value="general">General</option>
+            <option value="custom">Custom</option>
+            <option value="structured">Structured</option>
+            <option value="text">Text</option>
           </select>
         </div>
 
+        <div className="options-group">
+          <div className="options-row">
+            <label className="options-label">Options:</label>
+            <div className="options-controls">
+              <div className="option-item">
+                <input 
+                  type="checkbox" 
+                  id="useSelenium" 
+                  name="useSelenium"
+                  onChange={(e) => setUseSelenium(e.target.checked)}
+                />
+                <label htmlFor="useSelenium">Use Selenium</label>
+              </div>
+
+              <div className="option-item">
+                <input 
+                  type="checkbox" 
+                  id="Bs4" 
+                  name="UseBeautifulSoup"
+                  onChange={(e) => setUseBs4(e.target.checked)}
+                />
+                <label htmlFor="useProxy">Use Beautiful Soup</label>
+              </div>
+              
+              <div className="option-item">
+                <label htmlFor="timeout">Timeout:</label>
+                <input 
+                  type="number" 
+                  id="timeout" 
+                  name="timeout"
+                  min="1"
+                  max="300"
+                  defaultValue="30"
+                  onChange={(e) => setTimeout(parseInt(e.target.value, 10))}
+                />
+                <span className="unit">seconds</span>
+              </div>
+            </div>
+          </div>
+        </div>
         <button type="submit" className="scrape-button" disabled={loading}>
           {loading ? 'Scraping...' : 'Scrape'}
         </button>
