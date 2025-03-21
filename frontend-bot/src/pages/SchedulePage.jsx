@@ -102,7 +102,7 @@ const SchedulePage = ({ onNavigate }) => {
             onChange={handleChange}
             className="form-control"
           >
-            <option value="prices">Prices</option>
+            <option value="product">Product</option>
             <option value="reviews">Reviews</option>
           </select>
         </div>

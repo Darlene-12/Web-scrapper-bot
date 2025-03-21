@@ -3,8 +3,17 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+    background-color: white;
+    border-radius: 4px;
   }
-  
+  .schedule-container h2{
+    text-align: center;
+    margin-bottom: 40px;
+    color: white;
+    background-color: #4682B4; 
+    padding: 10px;
+    border-radius: 4px;
+  }
   .schedule-form {
     background-color: #f5f5f5;
     border: 1px solid #ddd;
@@ -33,19 +42,21 @@
   .frequency-options {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
   }
   
   .frequency-btn {
     padding: 8px 20px;
-    background-color: #f0f0f0;
+    background-color: white;
     border: 1px solid #ddd;
     cursor: pointer;
     border-radius: 3px;
+    color: black;
+    font-weight: bold;
   }
   
   .frequency-btn.active {
-    background-color: #007bff;
+    background-color: #28a745;
     color: white;
     border-color: #007bff;
   }
