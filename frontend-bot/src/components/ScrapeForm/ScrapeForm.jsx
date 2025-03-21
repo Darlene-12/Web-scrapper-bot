@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { scrapeData } from '../../services/api';
 import './ScrapeForm.css';
 
-const ScrapeForm = ({ onScrapingComplete }) => {
+const ScrapeForm = ({ onScrapingComplete, onNavigate }) => {
   const [formData, setFormData] = useState({
     url: '',
     keywords: '',
