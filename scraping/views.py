@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.exceptions import ValidationError
+# Removed duplicate import
 
 from .models import ScrapedData, ScrapingSchedule, ScrapingProxy
 from .serializers import (
@@ -76,6 +77,16 @@ class ScrapedDataViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(q_objects)
         
         return queryset
+    
+    @action(detail=False, methods=['get'])
+    def health(self, request):
+        """
+        Simple health check endpoint to verify API connectivity.
+        """
+        return Response({
+            'status': 'online',
+            'timestamp': timezone.now().isoformat()
+        })
     
     @action(detail=False, methods=['post'])
     def scrape_now(self, request):

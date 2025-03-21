@@ -11,6 +11,6 @@ router.register(r'proxies', ScrapingProxyViewSet, basename='proxy')
 
 # The API URLs are determined automatically by the router
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),  # Changed from 'api/' to '' since the prefix is already in the main urls.py
     # Add other non-viewset URLs below if needed
 ]
