@@ -192,6 +192,41 @@ const ScheduleForm = () => {
                 <h2>Schedule Scraping Tasks</h2>
             </div>
             
+            <div className="nav-container">
+                <div className="nav-buttons">
+                <button 
+                    className="nav-button active"
+                    onClick={() => onNavigate && onNavigate('scrape')}
+                >
+                    Scrape Data
+                </button>
+                <button 
+                    className="nav-button"
+                    onClick={() => onNavigate && onNavigate('results')}
+                >
+                    View Results
+                </button>
+
+                <button 
+                    className="nav-button"
+                    onClick={() => {
+                    console.log('Schedule button clicked');
+                    if (onNavigate) onNavigate('schedule');
+                    }}
+                >
+                    Schedule
+                </button>
+
+                <button 
+                    className="nav-button"
+                    onClick={() => onNavigate && onNavigate('results')}
+                >
+                    Proxies
+                </button>
+
+                </div>
+            </div>
+
             <div className="schedule-form">
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">

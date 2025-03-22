@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getScrapedData, downloadCSV, downloadJSON, deleteScrapedData } from '../api/api';
-import './ResultsPage.css';
-
-const ResultsPage = () => {
+import './ResultsView.css';
+const ResultsView = () => {
     // State for scraped data
     const [scrapedData, setScrapedData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -244,6 +243,42 @@ const ResultsPage = () => {
             <div className="results-header">
                 <h2>View Scraped Results</h2>
             </div>
+
+            <div className="nav-container">
+                <div className="nav-buttons">
+                <button 
+                    className="nav-button active"
+                    onClick={() => onNavigate && onNavigate('scrape')}
+                >
+                    Scrape Data
+                </button>
+                <button 
+                    className="nav-button"
+                    onClick={() => onNavigate && onNavigate('results')}
+                >
+                    View Results
+                </button>
+
+                <button 
+                    className="nav-button"
+                    onClick={() => {
+                    console.log('Schedule button clicked');
+                    if (onNavigate) onNavigate('schedule');
+                    }}
+                >
+                    Schedule
+                </button>
+
+                <button 
+                    className="nav-button"
+                    onClick={() => onNavigate && onNavigate('results')}
+                >
+                    Proxies
+                </button>
+
+                </div>
+            </div>
+
             
             <div className="search-section">
                 <div className="search-input">
@@ -421,4 +456,4 @@ const ResultsPage = () => {
     );
 };
 
-export default ResultsPage;
+export default ResultsView;

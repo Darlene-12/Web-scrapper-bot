@@ -1,7 +1,11 @@
 .results-view-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    margin-bottom:20px;
     padding: 20px;
+    background-color: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    border: 8px;
   }
   
   .results-header {

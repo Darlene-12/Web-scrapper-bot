@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import ScrapeForm from './components/ScrapeForm/ScrapeForm';
 import ResultsTable from './components/ResultsTable/ResultsTable';
-import SchedulePage from './pages/SchedulePage'; // Add import for SchedulePage
-import ResultsPage from './pages/ResultsPage'; // Import the ResultsPage
-
+import ScheduleForm from './pages/ScheduleForm'; 
+import ResultsView from './pages/ResultsView';
+import ProxyManagement from './pages/ProxyManagement'; // Fixed import path
 
 import './App.css';
 
 function App() {
   const [scrapingResults, setScrapingResults] = useState(null);
-  const [currentPage, setCurrentPage] = useState('scrape'); // Add state for current page
+  const [currentPage, setCurrentPage] = useState('scrape');
 
   // Add effect to log when page changes
   useEffect(() => {
@@ -29,7 +29,7 @@ function App() {
   // Render content based on current page
   const renderContent = () => {
     console.log(`Rendering content for page: ${currentPage}`);
-    
+
     switch (currentPage) {
       case 'scrape':
         return (
@@ -42,11 +42,13 @@ function App() {
           </>
         );
       case 'schedule':
-        return <SchedulePage onNavigate={handleNavigate} />;
+        return <ScheduleForm onNavigate={handleNavigate} />;
       case 'results':
-        // When you create ResultsPage component:
-        // return <ResultsPage onNavigate={handleNavigate} />;
-        return <ResultsPage onNavigate={handleNavigate} />;
+        return <ResultsView onNavigate={handleNavigate} />;
+      case 'proxies':
+        // Make sure we're rendering ProxyManagement, not ResultsView
+        console.log("Rendering ProxyManagement component");
+        return <ProxyManagement onNavigate={handleNavigate} />;
       default:
         return (
           <>

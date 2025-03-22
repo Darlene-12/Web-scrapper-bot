@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { scrapeData } from '../../services/api';
 import './ScrapeForm.css';
 
 const ScrapeForm = ({ onScrapingComplete, onNavigate }) => {
@@ -48,6 +47,7 @@ const ScrapeForm = ({ onScrapingComplete, onNavigate }) => {
     }
   };
 
+
   return (
     <div className="scrape-form-container">
       <h2>Multi-Functional Web Scraping Bot</h2>
@@ -78,6 +78,14 @@ const ScrapeForm = ({ onScrapingComplete, onNavigate }) => {
           >
             Schedule
           </button>
+
+          <button 
+            className="nav-button"
+            onClick={() => onNavigate && onNavigate('proxies')}
+          >
+            Proxies
+          </button>
+
         </div>
       </div>
 
