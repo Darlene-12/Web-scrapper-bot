@@ -50,10 +50,10 @@ const ScrapeForm = ({ onScrapingComplete, onNavigate }) => {
 
   return (
     <div className="scrape-form-container">
-      <h2>Multi-Functional Web Scraping Bot</h2>
-
-
-      {/* Navigation Buttons */}
+      <div className="scrape-header">
+        <h2>Multi-Functional Web Scraping Bot</h2>
+      </div>
+    
       <div className="nav-container">
         <div className="nav-buttons">
           <button 
