@@ -3,7 +3,7 @@ import ScrapeForm from './components/ScrapeForm/ScrapeForm';
 import ResultsTable from './components/ResultsTable/ResultsTable';
 import ScheduleForm from './pages/ScheduleForm'; 
 import ResultsView from './pages/ResultsView';
-import ProxyManagement from './pages/ProxyManagement'; // Fixed import path
+import ProxyManagement from './pages/ProxyManagement';
 
 import './App.css';
 
@@ -11,7 +11,6 @@ function App() {
   const [scrapingResults, setScrapingResults] = useState(null);
   const [currentPage, setCurrentPage] = useState('scrape');
 
-  // Add effect to log when page changes
   useEffect(() => {
     console.log(`Current page is now: ${currentPage}`);
   }, [currentPage]);
@@ -21,9 +20,15 @@ function App() {
     console.log('Scraping results:', results);
   };
 
+  // Improved navigation handler
   const handleNavigate = (page) => {
     console.log(`Navigation requested to: ${page}`);
-    setCurrentPage(page);
+    // Ensure the page value is valid
+    if (['scrape', 'results', 'schedule', 'proxies'].includes(page)) {
+      setCurrentPage(page);
+    } else {
+      console.error(`Invalid page requested: ${page}`);
+    }
   };
 
   // Render content based on current page

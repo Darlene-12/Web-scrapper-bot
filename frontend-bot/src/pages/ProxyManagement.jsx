@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getProxies, testProxy, deleteProxy, addProxy, updateProxy } from '../api/api';
 import './ProxyManagement.css';
 
-const ProxyManagement = () => {
+const ProxyManagement = ({onNavigate}) => {
     // State for proxies list
     const [proxies, setProxies] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -162,7 +162,7 @@ const ProxyManagement = () => {
             <div className="nav-container">
                 <div className="nav-buttons">
                 <button 
-                    className="nav-button active"
+                    className="nav-button"
                     onClick={() => onNavigate && onNavigate('scrape')}
                 >
                     Scrape Data
@@ -185,8 +185,8 @@ const ProxyManagement = () => {
                 </button>
 
                 <button 
-                    className="nav-button"
-                    onClick={() => onNavigate && onNavigate('results')}
+                    className="nav-button active"
+                    onClick={() => onNavigate && onNavigate('proxies')}
                 >
                     Proxies
                 </button>

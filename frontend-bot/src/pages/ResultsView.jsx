@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getScrapedData, downloadCSV, downloadJSON, deleteScrapedData } from '../api/api';
 import './ResultsView.css';
-const ResultsView = () => {
+const ResultsView = ({onNavigate}) => {
     // State for scraped data
     const [scrapedData, setScrapedData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -247,13 +247,13 @@ const ResultsView = () => {
             <div className="nav-container">
                 <div className="nav-buttons">
                 <button 
-                    className="nav-button active"
+                    className="nav-button"
                     onClick={() => onNavigate && onNavigate('scrape')}
                 >
                     Scrape Data
                 </button>
                 <button 
-                    className="nav-button"
+                    className="nav-button active"
                     onClick={() => onNavigate && onNavigate('results')}
                 >
                     View Results
@@ -271,7 +271,7 @@ const ResultsView = () => {
 
                 <button 
                     className="nav-button"
-                    onClick={() => onNavigate && onNavigate('results')}
+                    onClick={() => onNavigate && onNavigate('proxies')}
                 >
                     Proxies
                 </button>

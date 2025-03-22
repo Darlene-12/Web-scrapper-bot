@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createSchedule, getSchedules, deleteSchedule, runSchedule, updateSchedule } from '../api/api';
 import './ScheduleForm.css';
 
-const ScheduleForm = () => {
+const ScheduleForm = ({onNavigate}) => {
     // Form state
     const [formState, setFormState] = useState({
         url: '',
@@ -195,7 +195,7 @@ const ScheduleForm = () => {
             <div className="nav-container">
                 <div className="nav-buttons">
                 <button 
-                    className="nav-button active"
+                    className="nav-button"
                     onClick={() => onNavigate && onNavigate('scrape')}
                 >
                     Scrape Data
@@ -208,7 +208,7 @@ const ScheduleForm = () => {
                 </button>
 
                 <button 
-                    className="nav-button"
+                    className="nav-button active"
                     onClick={() => {
                     console.log('Schedule button clicked');
                     if (onNavigate) onNavigate('schedule');
@@ -219,7 +219,7 @@ const ScheduleForm = () => {
 
                 <button 
                     className="nav-button"
-                    onClick={() => onNavigate && onNavigate('results')}
+                    onClick={() => onNavigate && onNavigate('proxies')}
                 >
                     Proxies
                 </button>
