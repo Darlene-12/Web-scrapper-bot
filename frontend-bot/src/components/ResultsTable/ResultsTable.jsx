@@ -196,19 +196,19 @@ const ResultsTable = ({ data }) => {
                 <h2>Results:</h2>
                 <div className="view-toggle">
                     <button 
-                        className={`toggle-btn ${viewMode === 'structured' ? 'active' : ''}`}
+                        className={`toggle-btn1 ${viewMode === 'structured' ? 'active' : ''}`}
                         onClick={() => setViewMode('structured')}
                     >
                         Structured View
                     </button>
                     <button 
-                        className={`toggle-btn ${viewMode === 'raw' ? 'active' : ''}`}
+                        className={`toggle-btn1 ${viewMode === 'raw' ? 'active' : ''}`}
                         onClick={() => setViewMode('raw')}
                     >
                         Raw Data
                     </button>
                     <button 
-                        className={`toggle-btn ${viewMode === 'enhanced' ? 'active' : ''}`}
+                        className={`toggle-btn1 ${viewMode === 'enhanced' ? 'active' : ''}`}
                         onClick={() => setViewMode('enhanced')}
                     >
                         Enhanced View
