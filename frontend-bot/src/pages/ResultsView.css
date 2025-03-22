@@ -6,19 +6,24 @@
     box-sizing: border-box;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     border: 8px;
+    border-radius: 8px;
   }
   
   .results-header {
+    background-color: #4682B4;
+    color: white;
+    padding: 10px;
+    margin: -20px -20px 20px -20px;
+    border-radius: 8px 8px 0 0;
     text-align: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #ddd;
+    margin-bottom: 40px;
   }
   
   .results-header h2 {
     margin: 0;
     font-size: 24px;
     color: #333;
+    text-align:center;
   }
   
   /* Search and Filters */
@@ -229,6 +234,7 @@
     font-size: 14px;
     background-color: #007bff;
     color: white;
+    font-weight: bold;
   }
   
   .action-buttons .action-btn:disabled {

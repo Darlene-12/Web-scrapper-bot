@@ -9,12 +9,24 @@
   border-radius: 8px;
 }
 
+.schedule-container h2{
+  background-color: #4682B4;
+  color: white;
+  padding: 10px;
+  margin: -20px -20px 20px -20px;
+  border-radius: 8px 8px 0 0;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
 .schedule-header {
   text-align: center;
   margin-bottom: 25px;
   padding-bottom: 15px;
   border-bottom: 1px solid #ddd;
 }
+
+
 
 .schedule-header h2 {
   margin: 0;
@@ -96,12 +108,13 @@
 .frequency-buttons button {
   flex: 1;
   padding: 10px;
-  background-color: #f0f0f0;
+  background-color: green;
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s;
+  font-weight: bold;
 }
 
 .frequency-buttons button:hover {
@@ -147,13 +160,16 @@
 }
 
 .toggle-btn {
-  background-color: transparent;
-  border: none;
-  color: #007bff;
+  background: rgb(102, 148, 32);
+  border: 1px solid #ddd;
+  padding: 8px 16px;
   cursor: pointer;
   font-size: 14px;
-  padding: 0;
-  text-decoration: underline;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-weight: bold;  /* Making toggle buttons bold as requested */
+  color: #333;
+  position: relative;
 }
 
 .toggle-btn:hover {
@@ -184,6 +200,7 @@
   cursor: pointer;
   transition: background-color 0.2s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
 }
 
 .schedule-btn:hover {
