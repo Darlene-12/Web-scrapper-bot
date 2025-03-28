@@ -4,12 +4,13 @@ import ResultsTable from './components/ResultsTable/ResultsTable';
 import ScheduleForm from './pages/ScheduleForm'; 
 import ResultsView from './pages/ResultsView';
 import ProxyManagement from './pages/ProxyManagement';
+import LandingPage from './components/LandingPae/LandingPage';
 
 import './App.css';
 
 function App() {
   const [scrapingResults, setScrapingResults] = useState(null);
-  const [currentPage, setCurrentPage] = useState('scrape');
+  const [currentPage, setCurrentPage] = useState('landing');
 
   useEffect(() => {
     console.log(`Current page is now: ${currentPage}`);
@@ -24,7 +25,7 @@ function App() {
   const handleNavigate = (page) => {
     console.log(`Navigation requested to: ${page}`);
     // Ensure the page value is valid
-    if (['scrape', 'results', 'schedule', 'proxies'].includes(page)) {
+    if (['landing','scrape', 'results', 'schedule', 'proxies'].includes(page)) {
       setCurrentPage(page);
     } else {
       console.error(`Invalid page requested: ${page}`);
@@ -36,6 +37,8 @@ function App() {
     console.log(`Rendering content for page: ${currentPage}`);
 
     switch (currentPage) {
+      case 'landing':
+        return <LandingPage onNavigate={() => handleNavigate('scrape')} />;
       case 'scrape':
         return (
           <>
