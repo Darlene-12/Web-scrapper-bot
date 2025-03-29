@@ -1,0 +1,162 @@
+/* src/components/results/ExportOptions.css */
+.export-options {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .export-header {
+    margin-bottom: 20px;
+  }
+  
+  .export-header h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .export-header p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .export-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .export-button {
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .export-button:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .export-button.selected {
+    border-color: #4285f4;
+    background-color: #f0f7ff;
+  }
+  
+  .export-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .button-icon {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 8px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-bottom: 8px;
+  }
+  
+  .export-button.csv .button-icon {
+    background-color: #e8f5e9;
+    color: #4caf50;
+  }
+  
+  .export-button.json .button-icon {
+    background-color: #fff8e1;
+    color: #ffb300;
+  }
+  
+  .export-button.excel .button-icon {
+    background-color: #e3f2fd;
+    color: #2196f3;
+  }
+  
+  .export-button.xml .button-icon {
+    background-color: #f3e5f5;
+    color: #9c27b0;
+  }
+  
+  .export-button span {
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .export-status {
+    padding: 12px;
+    border-radius: 4px;
+    margin-top: 16px;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .export-status.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  /* src/components/results/ExportOptions.css (continued) */
+.export-status.error {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+  
+  .export-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .loading-spinner.small {
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 3px solid #4285f4;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+  }
+  
+  .export-options-disabled {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  
+  .export-options-disabled p {
+    text-align: center;
+    color: #666;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .export-buttons {
+      flex-direction: column;
+    }
+    
+    .export-button {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+    
+    .button-icon {
+      margin-right: 16px;
+      margin-bottom: 0;
+    }
+  }
+  

@@ -1,0 +1,47 @@
+/* src/components/common/Collapsible.css */
+.collapsible {
+    margin-bottom: 16px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .collapsible-header {
+    background-color: #eaeaea;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .collapsible-header:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .collapsible-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .collapsible-header.open {
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .collapsible-icon {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+  }
+  
+  .collapsible-content {
+    background-color: #f9f9f9;
+    overflow: hidden;
+    transition: height 0.3s ease;
+  }
+  
+  .collapsible-content-inner {
+    padding: 16px;
+  }
