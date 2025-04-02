@@ -10,7 +10,7 @@ const Collapsible = ({ title, children, initiallyOpen = false }) => {
   useEffect(() => {
     if (isOpen) {
       const contentHeight = contentRef.current.scrollHeight;
-      setHeight(`${contentHeight}px`);
+      setHeight(`${contentHeight}px`); 
       // After transition is complete, set height to auto to handle content changes
       setTimeout(() => {
         setHeight('auto');
