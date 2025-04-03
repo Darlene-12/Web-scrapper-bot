@@ -54,4 +54,5 @@ const Collapsible = ({ title, children, initiallyOpen = false }) => {
   );
 };
 
+
 export default Collapsible;
