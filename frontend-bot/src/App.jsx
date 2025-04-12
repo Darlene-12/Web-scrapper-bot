@@ -1,6 +1,8 @@
 // src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 
 // Import pages
 import LandingPage from './pages/LandingPage';
