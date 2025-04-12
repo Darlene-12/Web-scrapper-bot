@@ -1,13 +1,22 @@
 // src/components/layout/Navbar.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './Navbar.css'; // You'll need to create this CSS file
+import {Link, useNavigate} from 'react-router-dom';
+import './Navbar.css'; 
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleSignUp = () =>{
+    navigate('signup');
   };
 
   return (
@@ -50,8 +59,8 @@ const Navbar = () => {
         </ul>
 
         <div className="nav-auth">
-          <button className="login-button">Login</button>
-          <button className="signup-button">Sign Up</button>
+          <button className="login-button" onClick={handleLogin}>Login</button>
+          <button className="signup-button" onClick={handleSignUp}>Sign Up</button>
         </div>
       </div>
     </nav>
