@@ -1,4 +1,4 @@
-// src/components/results/DataProcessing.jsx
+
 import React, { useState } from 'react';
 import './DataProcessing.css';
 

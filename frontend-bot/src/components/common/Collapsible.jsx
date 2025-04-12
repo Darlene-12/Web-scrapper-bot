@@ -1,28 +1,40 @@
-// src/components/common/Collapsible.jsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
+
+// UseState to track if the collapsible is open or closed
+// useEffect to state the changes and do animations
+// useRef to access real HTML elememnt to measure its height
+
+
 import './Collapsible.css';
 
-const Collapsible = ({ title, children, initiallyOpen = false }) => {
+const Collapsible = ({title, children, initiallyOpen = false}) => {
+
+  // title is the header text, children is the conten that is inside the collapsible while initiallyOpen with the default optional prop
   const [isOpen, setIsOpen] = useState(initiallyOpen);
-  const [height, setHeight] = useState(initiallyOpen ? 'auto' : '0px');
+  const [height, setHeight] = useState(initiallyOpen ? 'auto': '0px');
   const contentRef = useRef(null);
 
-  useEffect(() => {
+  // isOpen: The lock — is the drawer open?
+  // height: The drawer space — how much space should it take?
+  // contentRef: The measuring tape — to know how big the drawer needs to be.
+
+
+
+  useEffect (() => {
     if (isOpen) {
-      const contentHeight = contentRef.current.scrollHeight;
-      setHeight(`${contentHeight}px`); 
-      // After transition is complete, set height to auto to handle content changes
-      setTimeout(() => {
+      const contentHeight = contentRef.current.scrollHeight; //Measures the height of the hidden content
+      setHeight(`${contentHeight}px`);
+
+      setTimeout (() => {
         setHeight('auto');
       }, 300);
     } else {
-      // First set a fixed height to enable transition
       const contentHeight = contentRef.current.scrollHeight;
       setHeight(`${contentHeight}px`);
-      // Trigger reflow
+
       contentRef.current.offsetHeight;
-      // Then animate to 0
-      setTimeout(() => {
+
+      setTimeout (() => {
         setHeight('0px');
       }, 10);
     }
@@ -33,18 +45,17 @@ const Collapsible = ({ title, children, initiallyOpen = false }) => {
   };
 
   return (
-    <div className="collapsible">
-      <div 
-        className={`collapsible-header ${isOpen ? 'open' : ''}`} 
-        onClick={toggleCollapsible}
+    <div className= "collapsible">
+      <div className={`collapsible-header ${isOpen ? 'open': ''}`}
+      onClick={toggleCollapsible}
       >
         <h3>{title}</h3>
-        <span className="collapsible-icon">{isOpen ? '▲' : '▼'}</span>
+        <span className="collapsible-icon">{isOpen ? '▲':'▲'}</span>
       </div>
-      <div 
+      <div
         ref={contentRef}
         className="collapsible-content"
-        style={{ height }}
+        style={{height}}
       >
         <div className="collapsible-content-inner">
           {children}
@@ -53,6 +64,5 @@ const Collapsible = ({ title, children, initiallyOpen = false }) => {
     </div>
   );
 };
-
 
 export default Collapsible;
