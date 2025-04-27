@@ -26,7 +26,7 @@ const Collapsible = ({title, children, initiallyOpen = false}) => {
       setHeight(`${contentHeight}px`);
 
       setTimeout (() => {
-        setHeight('auto');
+        setHeight('auto'); // setting this to auto allows the collapsible to grow or shrink if the content changes later
       }, 300);
     } else {
       const contentHeight = contentRef.current.scrollHeight;
